@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 const SolutionsHome = lazy(() => import('../features/home/SolutionsHome'));
 const TaskBoardSolution = lazy(() => import('../features/solutions/task-board/TaskBoardSolution'));
@@ -9,7 +9,7 @@ const CentralizedMoveSolution = lazy(
 
 export function AppRouter() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Suspense
         fallback={
           <div className="min-h-screen bg-slate-100 px-6 py-8 text-slate-800">Loading...</div>
@@ -21,6 +21,6 @@ export function AppRouter() {
           <Route path="/solutions/central-control-board" element={<CentralizedMoveSolution />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
