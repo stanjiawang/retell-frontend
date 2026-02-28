@@ -12,6 +12,10 @@ pnpm dev
 
 Open: `http://localhost:5180`
 
+## Live Demo
+
+`https://stanjiawang.github.io/retell-frontend/`
+
 ## Structure
 
 - `src/App.tsx` - app entry, router only
