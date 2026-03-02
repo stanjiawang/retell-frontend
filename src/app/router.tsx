@@ -6,6 +6,9 @@ const TaskBoardSolution = lazy(() => import('../features/solutions/task-board/Ta
 const CentralizedMoveSolution = lazy(
   () => import('../features/solutions/centralized-move/CentralizedMoveSolution')
 );
+const DragDropBoardSolution = lazy(
+  () => import('../features/solutions/drag-drop-board/DragDropBoardSolution')
+);
 
 export function AppRouter() {
   return (
@@ -19,6 +22,7 @@ export function AppRouter() {
           <Route path="/" element={<SolutionsHome />} />
           <Route path="/solutions/inline-move-board" element={<TaskBoardSolution />} />
           <Route path="/solutions/central-control-board" element={<CentralizedMoveSolution />} />
+          <Route path="/solutions/drag-drop-board" element={<DragDropBoardSolution />} />
         </Routes>
       </Suspense>
     </HashRouter>

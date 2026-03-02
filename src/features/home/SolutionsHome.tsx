@@ -23,6 +23,13 @@ const SOLUTIONS: SolutionDefinition[] = [
     status: 'Available',
     to: '/solutions/central-control-board',
   },
+  {
+    id: 'solution-3',
+    title: 'Drag Drop Board',
+    summary: 'Top-aligned create bar with direct drag-and-drop between columns.',
+    status: 'Available',
+    to: '/solutions/drag-drop-board',
+  },
 ];
 
 export default function SolutionsHome() {
