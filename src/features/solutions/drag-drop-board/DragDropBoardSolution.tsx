@@ -26,6 +26,7 @@ import {
   SECTION_LABEL,
   STATUS_PILL,
   SURFACE_PANEL,
+  TASK_CARD_DEFAULT,
   TEXT_INPUT,
 } from '../../../shared/ui/tokens';
 
@@ -273,7 +274,7 @@ export default function DragDropBoardSolution() {
                           className={
                             isDragging
                               ? 'cursor-grabbing border-sky-300 bg-sky-100 text-slate-900 opacity-60 shadow-sm'
-                              : 'cursor-grab'
+                              : `cursor-grab ${TASK_CARD_DEFAULT}`
                           }
                           buttonProps={{
                             draggable: true,
