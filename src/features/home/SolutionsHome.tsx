@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { PageHero } from '../../shared/ui/PageHero';
+import { PAGE_SHELL, PAGE_CONTAINER, PRIMARY_BUTTON } from '../../shared/ui/tokens';
 
 type SolutionDefinition = {
   id: string;
@@ -34,22 +36,18 @@ const SOLUTIONS: SolutionDefinition[] = [
 
 export default function SolutionsHome() {
   return (
-    <main className="min-h-screen bg-stone-100 px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
-        <header className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_20px_60px_-30px_rgba(15,23,42,0.25)]">
-          <div className="bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.16),_transparent_38%),radial-gradient(circle_at_top_right,_rgba(245,158,11,0.14),_transparent_34%)] px-6 py-8 sm:px-8">
-            <span className="inline-flex rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
-              Pattern Library
-            </span>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950">
-              Solution Gallery
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              Explore interaction patterns for the same task-board problem. Each entry demonstrates
-              a different control model you can evolve into more advanced solutions later.
-            </p>
-          </div>
-        </header>
+    <main className={PAGE_SHELL}>
+      <div className={PAGE_CONTAINER}>
+        <PageHero
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.16),_transparent_38%),radial-gradient(circle_at_top_right,_rgba(245,158,11,0.14),_transparent_34%)]"
+          body="Explore interaction patterns for the same task-board problem. Each entry demonstrates a different control model you can evolve into more advanced solutions later."
+          contentClassName="py-8 sm:px-8"
+          eyebrow="Pattern Library"
+          eyebrowClassName="inline-flex rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white"
+          title="Solution Gallery"
+          titleClassName="mt-4 text-4xl font-semibold tracking-tight text-slate-950"
+          bodyClassName="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base"
+        />
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="solutions list">
           {SOLUTIONS.map((solution) => (
@@ -79,7 +77,7 @@ export default function SolutionsHome() {
                 </span>
                 <Link
                   to={solution.to}
-                  className="inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600 group-hover:bg-sky-400"
+                  className={`${PRIMARY_BUTTON} min-h-0 rounded-xl px-4 py-2.5 group-hover:bg-sky-400`}
                 >
                   Open
                 </Link>
