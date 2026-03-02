@@ -7,6 +7,8 @@ import {
   type ColumnKey,
   type Task,
 } from '../../../shared/task-board/taskBoardData';
+import { BoardColumn } from '../../../shared/task-board/BoardColumn';
+import { TaskCard } from '../../../shared/task-board/TaskCard';
 import {
   getColumnAccent,
   getColumnBadge,
@@ -17,21 +19,13 @@ import { PageHero } from '../../../shared/ui/PageHero';
 import {
   BACK_LINK_BUTTON,
   CARD_LIST,
-  COLUMN_PANEL,
-  COLUMN_TITLE,
   INFO_STRIP,
   PAGE_CONTAINER,
   PAGE_SHELL,
-  PANEL_HEADER,
-  PANEL_HEADER_TITLE_WRAP,
   PRIMARY_BUTTON,
   SECTION_LABEL,
   STATUS_PILL,
   SURFACE_PANEL,
-  TASK_CARD,
-  TASK_CARD_DEFAULT,
-  TASK_TIME,
-  TASK_TITLE,
   TEXT_INPUT,
 } from '../../../shared/ui/tokens';
 
@@ -190,7 +184,13 @@ export default function DragDropBoardSolution() {
         />
 
         <section className={SURFACE_PANEL}>
-          <div className="grid gap-5 xl:grid-cols-[1.3fr_0.8fr_auto] xl:items-end">
+          <form
+            className="grid gap-5 xl:grid-cols-[1.3fr_0.8fr_auto] xl:items-end"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleAddTask();
+            }}
+          >
             <div className="grid gap-2">
               <label className={SECTION_LABEL} htmlFor="drag-drop-new-task">
                 Create task
@@ -211,15 +211,10 @@ export default function DragDropBoardSolution() {
               options={addOptions}
               value={addTo}
             />
-            <button
-              type="button"
-              className={PRIMARY_BUTTON}
-              onClick={handleAddTask}
-              disabled={!canAddTask}
-            >
+            <button type="submit" className={PRIMARY_BUTTON} disabled={!canAddTask}>
               Add task
             </button>
-          </div>
+          </form>
 
           <div className={INFO_STRIP}>
             <span className="font-medium text-slate-700">{dragSummary}</span>
@@ -235,26 +230,24 @@ export default function DragDropBoardSolution() {
             const isDropTarget = dropTarget?.column === column.key;
 
             return (
-              <section
+              <BoardColumn
                 key={column.key}
-                className={`${COLUMN_PANEL} ${getColumnAccent(column.key)} ${
-                  isDropTarget ? 'border-sky-300 ring-2 ring-sky-200' : 'border-white/80'
-                }`}
+                accentClassName={getColumnAccent(column.key)}
+                badge={
+                  <span className={getColumnBadge(column.key)}>{columns[column.key].length}</span>
+                }
+                className={isDropTarget ? 'border-sky-300 ring-2 ring-sky-200' : 'border-white/80'}
+                headerAction={
+                  <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500">
+                    Drop zone
+                  </span>
+                }
                 aria-label={column.title}
+                title={column.title}
                 onDragOver={(event) => handleColumnDragOver(event, column.key)}
                 onDrop={(event) => handleDrop(event, column.key, columns[column.key].length)}
                 onDragLeave={() => handleDragLeave(column.key)}
               >
-                <div className={PANEL_HEADER}>
-                  <div className={PANEL_HEADER_TITLE_WRAP}>
-                    <h2 className={COLUMN_TITLE}>{column.title}</h2>
-                    <span className={getColumnBadge(column.key)}>{columns[column.key].length}</span>
-                  </div>
-                  <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500">
-                    Drop zone
-                  </span>
-                </div>
-
                 <ul className={CARD_LIST}>
                   {columns[column.key].map((item, index) => {
                     const isDragging =
@@ -269,30 +262,28 @@ export default function DragDropBoardSolution() {
                         {isInsertionPoint ? (
                           <div className="mb-3 h-2 rounded-full bg-sky-300/80" aria-hidden="true" />
                         ) : null}
-                        <button
-                          type="button"
-                          draggable
-                          onDragStart={() => handleDragStart(column.key, item.id)}
-                          onDragEnd={handleDragEnd}
-                          onDragOver={(event) => handleCardDragOver(event, column.key, index)}
-                          onDrop={(event) => handleDrop(event, column.key, index)}
-                          className={`${TASK_CARD} ${
-                            isDragging
-                              ? 'cursor-grabbing border-sky-300 bg-sky-100 text-slate-900 opacity-60 shadow-sm'
-                              : `cursor-grab ${TASK_CARD_DEFAULT}`
-                          }`}
-                          aria-label={`Drag ${item.title}`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <span className={TASK_TITLE}>{item.title}</span>
+                        <TaskCard
+                          title={item.title}
+                          timestamp={item.timestamp}
+                          badge={
                             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-500">
                               Drag
                             </span>
-                          </div>
-                          <span className={TASK_TIME}>
-                            {new Date(item.timestamp).toLocaleTimeString()}
-                          </span>
-                        </button>
+                          }
+                          className={
+                            isDragging
+                              ? 'cursor-grabbing border-sky-300 bg-sky-100 text-slate-900 opacity-60 shadow-sm'
+                              : 'cursor-grab'
+                          }
+                          buttonProps={{
+                            draggable: true,
+                            onDragStart: () => handleDragStart(column.key, item.id),
+                            onDragEnd: handleDragEnd,
+                            onDragOver: (event) => handleCardDragOver(event, column.key, index),
+                            onDrop: (event) => handleDrop(event, column.key, index),
+                            'aria-label': `Drag ${item.title}`,
+                          }}
+                        />
                       </li>
                     );
                   })}
@@ -303,7 +294,7 @@ export default function DragDropBoardSolution() {
                     </li>
                   ) : null}
                 </ul>
-              </section>
+              </BoardColumn>
             );
           })}
         </section>

@@ -8,20 +8,17 @@ import {
   type ColumnKey,
   type Task,
 } from '../../../shared/task-board/taskBoardData';
+import { BoardColumn } from '../../../shared/task-board/BoardColumn';
+import { TaskCard } from '../../../shared/task-board/TaskCard';
 import { getColumnAccent, getColumnBadge } from '../../../shared/task-board/boardUi';
 import { PageHero } from '../../../shared/ui/PageHero';
 import {
   BACK_LINK_BUTTON,
   CARD_LIST,
-  COLUMN_PANEL,
   PAGE_CONTAINER,
   PAGE_SHELL,
-  PANEL_HEADER,
   PRIMARY_BUTTON,
   SECTION_LABEL,
-  TASK_CARD_DEFAULT,
-  TASK_TIME,
-  TASK_TITLE,
   TEXT_INPUT,
 } from '../../../shared/ui/tokens';
 
@@ -87,19 +84,23 @@ export default function TaskBoardSolution() {
 
         <section className="grid gap-4 xl:grid-cols-3" aria-label="task board">
           {COLUMN_CONFIG.map((column) => (
-            <section
+            <BoardColumn
               key={column.key}
-              className={`${COLUMN_PANEL} border-white/80 ${getColumnAccent(column.key)}`}
+              accentClassName={getColumnAccent(column.key)}
+              badge={
+                <span className={getColumnBadge(column.key)}>{columns[column.key].length}</span>
+              }
+              className="border-white/80"
               aria-label={column.title}
+              title={column.title}
             >
-              <div className={PANEL_HEADER}>
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-semibold text-slate-950">{column.title}</h2>
-                  <span className={getColumnBadge(column.key)}>{columns[column.key].length}</span>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-3 rounded-3xl border border-white/80 bg-white/85 p-4 shadow-sm">
+              <form
+                className="mt-4 grid gap-3 rounded-3xl border border-white/80 bg-white/85 p-4 shadow-sm"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  handleAddTask(column.key);
+                }}
+              >
                 <label className={SECTION_LABEL} htmlFor={`draft-${column.key}`}>
                   Add a task
                 </label>
@@ -112,45 +113,42 @@ export default function TaskBoardSolution() {
                   placeholder={column.placeholder}
                 />
                 <button
-                  type="button"
+                  type="submit"
                   className={`${PRIMARY_BUTTON} min-h-[48px] px-4`}
-                  onClick={() => handleAddTask(column.key)}
                   disabled={!drafts[column.key].trim()}
                 >
                   Add task
                 </button>
-              </div>
+              </form>
 
               <ul className={CARD_LIST}>
                 {columns[column.key].map((item) => (
-                  <li
-                    key={item.id}
-                    className={`grid gap-3 rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm ${TASK_CARD_DEFAULT}`}
-                  >
-                    <div className="grid gap-1">
-                      <span className={TASK_TITLE}>{item.title}</span>
-                      <span className={TASK_TIME}>
-                        {new Date(item.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {COLUMN_CONFIG.filter((targetColumn) => targetColumn.key !== column.key).map(
-                        (targetColumn) => (
-                          <button
-                            key={targetColumn.key}
-                            type="button"
-                            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
-                            onClick={() => handleMoveTask(column.key, targetColumn.key, item.id)}
-                          >
-                            Move to {targetColumn.title}
-                          </button>
-                        )
-                      )}
-                    </div>
+                  <li key={item.id}>
+                    <TaskCard
+                      title={item.title}
+                      timestamp={item.timestamp}
+                      className="border-white/80 bg-white/90 p-4 shadow-sm"
+                      footer={
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {COLUMN_CONFIG.filter(
+                            (targetColumn) => targetColumn.key !== column.key
+                          ).map((targetColumn) => (
+                            <button
+                              key={targetColumn.key}
+                              type="button"
+                              className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
+                              onClick={() => handleMoveTask(column.key, targetColumn.key, item.id)}
+                            >
+                              Move to {targetColumn.title}
+                            </button>
+                          ))}
+                        </div>
+                      }
+                    />
                   </li>
                 ))}
               </ul>
-            </section>
+            </BoardColumn>
           ))}
         </section>
       </div>

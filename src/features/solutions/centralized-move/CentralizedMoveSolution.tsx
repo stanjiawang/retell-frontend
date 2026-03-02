@@ -7,6 +7,8 @@ import {
   type ColumnKey,
   type Task,
 } from '../../../shared/task-board/taskBoardData';
+import { BoardColumn } from '../../../shared/task-board/BoardColumn';
+import { TaskCard } from '../../../shared/task-board/TaskCard';
 import {
   getColumnAccent,
   getColumnBadge,
@@ -17,22 +19,14 @@ import { PageHero } from '../../../shared/ui/PageHero';
 import {
   BACK_LINK_BUTTON,
   CARD_LIST,
-  COLUMN_PANEL,
-  COLUMN_TITLE,
   PAGE_CONTAINER,
   PAGE_SHELL,
-  PANEL_HEADER,
-  PANEL_HEADER_TITLE_WRAP,
   PRIMARY_BUTTON,
   SECONDARY_BUTTON,
   SECTION_LABEL,
   SMALL_OUTLINE_BUTTON,
   SUCCESS_BUTTON,
   SURFACE_PANEL,
-  TASK_CARD,
-  TASK_CARD_DEFAULT,
-  TASK_TIME,
-  TASK_TITLE,
   TEXT_INPUT,
 } from '../../../shared/ui/tokens';
 
@@ -159,7 +153,13 @@ export default function CentralizedMoveSolution() {
                     </p>
                     <h2 className="mt-2 text-xl font-semibold text-slate-950">Add a new task</h2>
                   </div>
-                  <div className="grid gap-3">
+                  <form
+                    className="grid gap-3"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      handleAddTask();
+                    }}
+                  >
                     <div className="grid gap-2">
                       <label className={SECTION_LABEL} htmlFor="new-task-title">
                         Task title
@@ -180,15 +180,10 @@ export default function CentralizedMoveSolution() {
                       options={addOptions}
                       value={addTo}
                     />
-                    <button
-                      type="button"
-                      className={PRIMARY_BUTTON}
-                      onClick={handleAddTask}
-                      disabled={!canAddTask}
-                    >
+                    <button type="submit" className={PRIMARY_BUTTON} disabled={!canAddTask}>
                       Add task
                     </button>
-                  </div>
+                  </form>
                 </div>
               </section>
 
@@ -278,20 +273,18 @@ export default function CentralizedMoveSolution() {
                   isActiveColumn;
 
                 return (
-                  <section
+                  <BoardColumn
                     key={column.key}
-                    className={`${COLUMN_PANEL} ${getColumnAccent(column.key)} ${
+                    accentClassName={getColumnAccent(column.key)}
+                    badge={
+                      <span className={getColumnBadge(column.key)}>
+                        {columns[column.key].length}
+                      </span>
+                    }
+                    className={
                       isActiveColumn ? 'border-slate-300 ring-2 ring-slate-200' : 'border-white/80'
-                    }`}
-                    aria-label={column.title}
-                  >
-                    <div className={PANEL_HEADER}>
-                      <div className={PANEL_HEADER_TITLE_WRAP}>
-                        <h2 className={COLUMN_TITLE}>{column.title}</h2>
-                        <span className={getColumnBadge(column.key)}>
-                          {columns[column.key].length}
-                        </span>
-                      </div>
+                    }
+                    headerAction={
                       <button
                         type="button"
                         className={
@@ -304,26 +297,20 @@ export default function CentralizedMoveSolution() {
                       >
                         {isAllSelected ? 'Unselect all' : 'Select all'}
                       </button>
-                    </div>
-
+                    }
+                    aria-label={column.title}
+                    title={column.title}
+                  >
                     <ul className={CARD_LIST}>
                       {columns[column.key].map((item) => {
                         const isSelected = selectedTaskIds.includes(item.id);
 
                         return (
                           <li key={item.id}>
-                            <button
-                              type="button"
-                              className={`${TASK_CARD} ${
-                                isSelected
-                                  ? 'border-sky-200 bg-sky-100 text-slate-900 shadow-sm'
-                                  : TASK_CARD_DEFAULT
-                              }`}
-                              onClick={() => handleSelectTask(column.key, item.id)}
-                              aria-pressed={isSelected}
-                            >
-                              <div className="flex items-start justify-between gap-3">
-                                <span className={TASK_TITLE}>{item.title}</span>
+                            <TaskCard
+                              title={item.title}
+                              timestamp={item.timestamp}
+                              badge={
                                 <span
                                   className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                                     isSelected
@@ -333,16 +320,22 @@ export default function CentralizedMoveSolution() {
                                 >
                                   Selected
                                 </span>
-                              </div>
-                              <span className={TASK_TIME}>
-                                {new Date(item.timestamp).toLocaleTimeString()}
-                              </span>
-                            </button>
+                              }
+                              className={
+                                isSelected
+                                  ? 'border-sky-200 bg-sky-100 text-slate-900 shadow-sm'
+                                  : undefined
+                              }
+                              buttonProps={{
+                                onClick: () => handleSelectTask(column.key, item.id),
+                                'aria-pressed': isSelected,
+                              }}
+                            />
                           </li>
                         );
                       })}
                     </ul>
-                  </section>
+                  </BoardColumn>
                 );
               })}
             </div>
